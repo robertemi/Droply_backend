@@ -50,6 +50,28 @@ class Courier():
                 )
             return None
 
+    @classmethod
+    def get_by_email_and_password(cls, conn, email: str, password: str):
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT * FROM couriers WHERE courier_email = %s AND password = %s",
+                    (email, password)
+                )
+                result = cur.fetchone()
+                if result:
+                    return cls(
+                        courier_id=result[0],
+                        name=result[1],
+                        vehicle_type=result[2],
+                        rating=result[3],
+                        balance=result[4],
+                        password=result[5],
+                        email=result[6]
+                    )
+        except Exception as e:
+            print(f"Encountered error: {e}")
+
     def to_dict(self) -> dict:
         """Convert to API-friendly format"""
         return {
@@ -58,5 +80,5 @@ class Courier():
             'vehicle_type': self.vehicle_type,
             'rating': float(self.rating),
             'balance': float(self.balance),
-            'email': self.email
+            'courier_email': self.email
         }

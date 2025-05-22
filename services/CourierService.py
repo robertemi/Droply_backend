@@ -21,6 +21,21 @@ class CourierService:
             print(f"Courier creation failed: {str(e)}")
             return None
 
+    @staticmethod
+    def get_courier_from_email_and_password(
+            conn, email, password
+    ):
+        try:
+            courier = Courier.get_by_email_and_password(conn, email, password)
+            return courier
+
+        except Exception as e:
+            print(f"Encountered: {e}")
+        finally:
+            conn.rollback()
+
+
+
     # @staticmethod
     # def assign_order(conn, courier_id, order_id):
     #     courier = Courier.get_by_id(conn, courier_id)

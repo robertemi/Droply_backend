@@ -71,7 +71,7 @@ class Company():
                         email=result[4]
                     )
         except Exception as e:
-            print(f"Encountered erorr: {e}")
+            print(f"Encountered error: {e}")
 
     def to_dict(self) -> dict:
         """Convert to API-friendly format"""

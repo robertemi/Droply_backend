@@ -35,3 +35,32 @@ def create_courier():
         return jsonify({"error": str(e)}), 400
     finally:
         conn.close()
+
+@courier_bp.route('/log_in', methods=['POST'])
+def validate_log_in():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"})
+
+        conn = get_db_connection()
+        courier = CourierService.get_courier_from_email_and_password(
+            conn, data['courier_email'], data['password']
+        )
+
+        if courier:
+            return jsonify({
+                "success": True,
+                "company": courier.to_dict()
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Invalid credentials"
+            }), 401
+
+    except Exception as e:
+        print(f"Encountered: {e}")
+    finally:
+        if conn:
+            conn.close()
