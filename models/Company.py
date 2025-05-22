@@ -15,7 +15,7 @@ class Company():
             with conn.cursor() as cur:
                 print(f"Attempting to insert: {name}, {address}, {password}, {email}")  # Debug log
                 cur.execute(
-                    "INSERT INTO companies (name, address, password, email) "
+                    "INSERT INTO companies (name, address, password, company_email) "
                     "VALUES (%s, %s, %s, %s) RETURNING company_id",
                     (name, address, password, email)
                 )
@@ -81,5 +81,5 @@ class Company():
             'company_id': self.company_id,
             'name': self.name,
             'address': self.address,
-            'email': self.email
+            'company_email': self.email
         }

@@ -32,7 +32,7 @@ def register_company():
             with conn.cursor() as cur:
                 cur.execute("SHOW server_version;")
                 print("PostgreSQL version:", cur.fetchone())
-            return jsonify({"error": "Database operation failed - check logs"}), 400
+            return jsonify({"error": "Database operation failed - check logs controller"}), 400
 
         return jsonify(company.to_dict()), 201
     except Exception as e:
