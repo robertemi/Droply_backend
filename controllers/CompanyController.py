@@ -14,17 +14,17 @@ def register_company():
         print(f"Received data: {data}")
 
         # Required fields - now including password
-        if not all([data.get('name'), data.get('address'), data.get('password'), data.get('email')]):
+        if not all([data.get('name'), data.get('address'), data.get('password'), data.get('company_email')]):
             print("Missing required fields")
             return jsonify({"error": "Name, address, and password are required"}), 400
 
-        print(f"Attempting to create company: {data['name']}, {data['address']}, {data['email']}")
+        print(f"Attempting to create company: {data['name']}, {data['address']}, {data['company_email']}")
         company = CompanyService.register_company(
             conn=conn,
             name=data['name'],
             address=data['address'],
             password=data['password'],
-            email=data['email']
+            email=data['company_email']
         )
 
         if not company:

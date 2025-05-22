@@ -17,7 +17,7 @@ class Courier():
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "INSERT INTO couriers (name, vehicle_type, rating, balance, password, email) "
+                    "INSERT INTO couriers (name, vehicle_type, rating, balance, password, courier_email) "
                     "VALUES (%s, %s, %s, %s, %s, %s) RETURNING courier_id",
                     (name, vehicle_type, rating, balance, password, email)
                 )
