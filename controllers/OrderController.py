@@ -14,13 +14,15 @@ def create_order():
         if not all([data.get('company_id'), data.get('pickup_address'), data.get('delivery_address')]):
             return jsonify({"error": "Missing fields required"}), 400
 
+        courier_id = data.get('courier_id')
+
         print(f"Attempt to create Order: {data['company_id']}, {data['pickup_address']}, {data['delivery_address']}")
         order = OrderService.create_order(
             conn=conn,
             company_id=data['company_id'],
             pickup_address=data['pickup_address'],
             delivery_address=data['delivery_address'],
-            courier_id=data['courier_id'] if data['courier_id'] else None
+            courier_id=courier_id
         )
 
         if not order:
