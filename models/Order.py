@@ -18,14 +18,27 @@ class Order():
     def create(cls, conn, company_id, pickup_address, delivery_address, status, created_at, courier_id: Optional[int] = None):
         try:
             with conn.cursor() as cur:
-                cur.execute(
-                    "INSERT INTO orders (company_id, pickup_address, delivery_address, status, created_at, courier_id) "
-                    "VALUES (%s, %s, %s, %s, %s, %s) RETURNING order_id",
-                    (company_id, pickup_address, delivery_address, status, created_at, courier_id)
-                )
+                # handle case of no assigned courier
+                if courier_id:
+                    cur.execute(
+                        "INSERT INTO orders (company_id, pickup_address, delivery_address, status, created_at, courier_id) "
+                        "VALUES (%s, %s, %s, %s, %s, %s) RETURNING order_id",
+                        (company_id, pickup_address, delivery_address, status, created_at, courier_id)
+                    )
+                    order_id = cur.fetchone()[0]
+                    conn.commit()
+                    return cls(order_id, company_id, pickup_address, delivery_address, status, created_at, courier_id)
+
+                else:
+                    cur.execute(
+                        "INSERT INTO orders (company_id, pickup_address, delivery_address, status, created_at) "
+                        "VALUES (%s, %s, %s, %s, %s) RETURNING order_id",
+                        (company_id, pickup_address, delivery_address, status, created_at)
+                    )
                 order_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(order_id, company_id, pickup_address, delivery_address, status, created_at, courier_id)
+                return cls(order_id, company_id, pickup_address, delivery_address, status, created_at)
+
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Order creation failed: {e}")
