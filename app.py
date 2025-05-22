@@ -8,8 +8,6 @@ from controllers import (
     OrderStatusHistoryController
 )
 
-
-
 def create_app(config_class=Config):
     """Application factory pattern"""
     app = Flask(__name__)
