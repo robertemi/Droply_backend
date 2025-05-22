@@ -9,10 +9,12 @@ def create_courier():
     conn = get_db_connection()
     try:
         data = request.get_json()
+        print(f"Received data: {data}")
 
         if not all([data.get('name'), data.get('vehicle_type'), data.get('rating'), data.get('balance')]):
             return jsonify({"error": "Missing fields required"}), 400
 
+        print(f"Attempt to create Courier: {data['name']}, {data['vehicle_type']}, {data['rating']}, {data['balance']}")
         courier = CourierService.create_courier(
             conn,
             name=data['name'],
@@ -22,6 +24,7 @@ def create_courier():
         )
 
         if not courier:
+            print(f"CourierService returned None")
             return jsonify({"error": "Courier creation failed"}), 400
 
         return jsonify(courier.to_dict()), 201

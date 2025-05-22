@@ -21,7 +21,7 @@ class Courier():
                 )
                 courier_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(name, vehicle_type, rating, balance, courier_id)
+                return cls(courier_id, name, vehicle_type, rating, balance)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Courier creation failed: {e}")

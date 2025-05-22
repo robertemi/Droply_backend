@@ -9,10 +9,12 @@ def create_order():
     conn = get_db_connection()
     try:
         data = request.get_json()
+        print(f"Received Data: {data}")
 
         if not all([data.get('company_id'), data.get('pickup_address'), data.get('delivery_address')]):
             return jsonify({"error": "Missing fields required"}), 400
 
+        print(f"Attempt to create Order: {data['company_id']}, {data['pickup_address']}, {data['delivery_address']}")
         order = OrderService.create_order(
             conn=conn,
             company_id=data['company_id'],
@@ -22,6 +24,7 @@ def create_order():
         )
 
         if not order:
+            print(f"Order Service returned None")
             return jsonify({"error": "Company registration failed"}), 400
 
         return jsonify(order.to_dict()), 201

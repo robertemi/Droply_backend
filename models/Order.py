@@ -25,7 +25,7 @@ class Order():
                 )
                 order_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(company_id, pickup_address, delivery_address, status, created_at, courier_id, order_id)
+                return cls(order_id, company_id, pickup_address, delivery_address, status, created_at, courier_id)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Order creation failed: {e}")

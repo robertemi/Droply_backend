@@ -20,7 +20,7 @@ class OrderStatusHistory:
                 )
                 orderstatushistory_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(order_id, status, timestamp, orderstatushistory_id)
+                return cls(orderstatushistory_id, order_id, status, timestamp)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Order Status History creation failed: {e}")

@@ -9,10 +9,12 @@ def create_order_status_history():
     conn = get_db_connection()
     try:
         data = request.get_json()
+        print(f"Received data: {data}")
 
         if not all([data.get('order_id'), data.get('status')]):
             return jsonify({"error": "Missing fields required"}), 400
 
+        print(f"Attempt to create OrderStatusHistory: {data['order_id']}, {data['status']}")
         order_status_history = OrderStatusHistoryService.create(
             conn=conn,
             order_id=data['order_id'],
@@ -20,6 +22,7 @@ def create_order_status_history():
         )
 
         if not order_status_history:
+            print(f"OrderStatusHistory Service returned None")
             return jsonify({"error": "Order status history creation failed"}), 400
 
     except Exception as e:
