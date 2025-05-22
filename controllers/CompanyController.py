@@ -11,11 +11,14 @@ def register_company():
     conn = get_db_connection()
     try:
         data = request.get_json()
+        print(f"Received data: {data}")
 
         # Required fields
         if not all([data.get('name'), data.get('address')]):
+            print("Missing required fields")
             return jsonify({"error": "Name and address are required"}), 400
 
+        print(f"Attempting to create company: {data['name']}, {data['address']}")
         # Create company
         company = CompanyService.register_company(
             conn=conn,
@@ -24,6 +27,7 @@ def register_company():
         )
 
         if not company:
+            print("CompanyService returned None")
             return jsonify({"error": "Company registration failed controller"}), 400
 
         return jsonify(company.to_dict()), 201
