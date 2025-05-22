@@ -3,7 +3,7 @@ from models.Order import Order
 class CourierService:
     @staticmethod
     def create_courier(
-        conn, name, vehicle_type, rating, balance, password
+        conn, name, vehicle_type, rating, balance, password, email
     ):
         try:
             courier = Courier.create(
@@ -12,7 +12,8 @@ class CourierService:
                 vehicle_type=vehicle_type,
                 rating=rating,
                 balance=balance,
-                password=password
+                password=password,
+                email=email
             )
             return courier
         except Exception as e:

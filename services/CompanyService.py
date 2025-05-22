@@ -9,7 +9,8 @@ class CompanyService:
             conn,
             name: str,
             address: str,
-            password: str
+            password: str,
+            email: str
     ) -> Optional[Company]:
         """Handles complete company registration workflow"""
         try:
@@ -22,7 +23,8 @@ class CompanyService:
                 conn=conn,
                 name=name,
                 address=address,
-                password=password
+                password=password,
+                email=email
             )
             return company
 
@@ -34,3 +36,18 @@ class CompanyService:
             conn.rollback()
             print(f"Validation error: {e}")
             return None
+
+    # to be used for log in functionality
+    @staticmethod
+    def get_company_from_email_and_password(
+            conn, email, password
+    ):
+        try:
+            company = Company.get_by_email_and_password(conn, email, password)
+            return company
+
+        except Exception as e:
+            print(f"Encountered: {e}")
+        finally:
+            conn.rollback()
+

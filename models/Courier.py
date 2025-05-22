@@ -2,27 +2,28 @@ import psycopg2
 
 
 class Courier():
-    def __init__(self, courier_id: int, name: str, vehicle_type: str, rating: int, balance: float, password: str):
+    def __init__(self, courier_id: int, name: str, vehicle_type: str, rating: int, balance: float, password: str, email: str):
         self.courier_id = courier_id
         self.name = name
         self.vehicle_type = vehicle_type
         self.rating = rating
         self.balance = balance
         self.password = password
+        self.email = email
 
     @classmethod
-    def create(cls, conn, name: str, vehicle_type: str, rating: int, balance: float, password: str):
+    def create(cls, conn, name: str, vehicle_type: str, rating: int, balance: float, password: str, email: str):
         """Create new courier in database"""
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "INSERT INTO couriers (name, vehicle_type, rating, balance, password) "
-                    "VALUES (%s, %s, %s, %s, %s) RETURNING courier_id",
-                    (name, vehicle_type, rating, balance, password)
+                    "INSERT INTO couriers (name, vehicle_type, rating, balance, password, email) "
+                    "VALUES (%s, %s, %s, %s, %s, %s) RETURNING courier_id",
+                    (name, vehicle_type, rating, balance, password, email)
                 )
                 courier_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(courier_id, name, vehicle_type, rating, balance, password)
+                return cls(courier_id, name, vehicle_type, rating, balance, password, email)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Courier creation failed: {e}")
@@ -33,7 +34,7 @@ class Courier():
         """Retrieve courier by id"""
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT * FROM couriers WHERE id = %s",
+                "SELECT * FROM couriers WHERE courier_id = %s",
                 (id,)
             )
             result = cur.fetchone()
@@ -44,7 +45,8 @@ class Courier():
                     vehicle_type=result[2],
                     rating=result[3],
                     balance=result[4],
-                    password=result[5]
+                    password=result[5],
+                    email=result[6]
                 )
             return None
 
@@ -55,5 +57,6 @@ class Courier():
             'name': self.name,
             'vehicle_type': self.vehicle_type,
             'rating': float(self.rating),
-            'balance': float(self.balance)
+            'balance': float(self.balance),
+            'email': self.email
         }

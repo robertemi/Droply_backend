@@ -11,17 +11,18 @@ def create_courier():
         data = request.get_json()
         print(f"Received data: {data}")
 
-        if not all([data.get('name'), data.get('vehicle_type'), data.get('rating'), data.get('balance')]):
+        if not all([data.get('name'), data.get('vehicle_type'), data.get('rating'), data.get('balance'), data.get('email')]):
             return jsonify({"error": "Missing fields required"}), 400
 
-        print(f"Attempt to create Courier: {data['name']}, {data['vehicle_type']}, {data['rating']}, {data['balance']}")
+        print(f"Attempt to create Courier: {data['name']}, {data['vehicle_type']}, {data['rating']}, {data['balance']}, {data['email']}")
         courier = CourierService.create_courier(
             conn,
             name=data['name'],
             vehicle_type=data['vehicle_type'],
             rating=data['rating'],
             balance=data['balance'],
-            password=data['password']
+            password=data['password'],
+            email=data['email']
         )
 
         if not courier:
