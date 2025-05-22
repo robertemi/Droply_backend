@@ -32,12 +32,20 @@ else:
 connection_pool = psycopg2.pool.SimpleConnectionPool(
     minconn=1,
     maxconn=10,
-    **DB_CONFIG
+    **DB_CONFIG,
+    options="-c statement_timeout=5s"  # Add timeout
 )
-
 def get_db_connection():
     """Get a connection from the pool"""
-    return connection_pool.getconn()
+    try:
+        conn = connection_pool.getconn()
+        # Verify connection is alive
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+        return conn
+    except Exception as e:
+        print(f"Connection check failed: {e}")
+        raise
 
 def return_db_connection(conn):
     """Return connection to the pool"""

@@ -23,7 +23,8 @@ def register_company():
         company = CompanyService.register_company(
             conn=conn,
             name=data['name'],
-            address=data['address']
+            address=data['address'],
+            password=data['password']
         )
 
         if not company:

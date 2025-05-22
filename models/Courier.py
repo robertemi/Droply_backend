@@ -2,26 +2,27 @@ import psycopg2
 
 
 class Courier():
-    def __init__(self, courier_id: int, name: str, vehicle_type: str, rating: int, balance: float):
+    def __init__(self, courier_id: int, name: str, vehicle_type: str, rating: int, balance: float, password: str):
         self.courier_id = courier_id
         self.name = name
         self.vehicle_type = vehicle_type
         self.rating = rating
         self.balance = balance
+        self.password = password
 
     @classmethod
-    def create(cls, conn, name: str, vehicle_type: str, rating: int, balance: float):
+    def create(cls, conn, name: str, vehicle_type: str, rating: int, balance: float, password: str):
         """Create new courier in database"""
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "INSERT INTO couriers (name, vehicle_type, rating, balance) "
-                    "VALUES (%s, %s, %s, %s) RETURNING courier_id",
-                    (name, vehicle_type, rating, balance)
+                    "INSERT INTO couriers (name, vehicle_type, rating, balance, password) "
+                    "VALUES (%s, %s, %s, %s, %s) RETURNING courier_id",
+                    (name, vehicle_type, rating, balance, password)
                 )
                 courier_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(courier_id, name, vehicle_type, rating, balance)
+                return cls(courier_id, name, vehicle_type, rating, balance, password)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Courier creation failed: {e}")
@@ -42,7 +43,8 @@ class Courier():
                     name=result[1],
                     vehicle_type=result[2],
                     rating=result[3],
-                    balance=result[4]
+                    balance=result[4],
+                    password=result[5]
                 )
             return None
 

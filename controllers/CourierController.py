@@ -20,7 +20,8 @@ def create_courier():
             name=data['name'],
             vehicle_type=data['vehicle_type'],
             rating=data['rating'],
-            balance=data['balance']
+            balance=data['balance'],
+            password=data['password']
         )
 
         if not courier:

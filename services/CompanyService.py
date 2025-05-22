@@ -8,7 +8,8 @@ class CompanyService:
     def register_company(
             conn,
             name: str,
-            address: str
+            address: str,
+            password: str
     ) -> Optional[Company]:
         """Handles complete company registration workflow"""
         try:
@@ -20,7 +21,8 @@ class CompanyService:
             company = Company.create(
                 conn=conn,
                 name=name,
-                address=address
+                address=address,
+                password=password
             )
             return company
 
