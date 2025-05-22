@@ -46,7 +46,7 @@ If the company, given email and password is found, the user can proceed as compa
 '''
 
 @company_bp.route('/log_in', methods=['POST'])
-def validate_log_in() -> bool:
+def validate_log_in():
     conn = get_db_connection()
     try:
         data = request.get_json()
@@ -55,9 +55,11 @@ def validate_log_in() -> bool:
             conn, data['company_email'], data['password']
         )
 
-        if not company:
-            return False
-        return True
+        if company:
+            return jsonify({"success": True}), 200
+        else:
+            return jsonify({"success": False}), 401
+
     except Exception as e:
         print(f"Encountered: {e}")
     finally:
