@@ -26,7 +26,7 @@ class CompanyService:
 
         except psycopg2.Error as e:
             conn.rollback()
-            print(f"Company registration failed: {e}")
+            print(f"Company registration failed service: {e}")
             return None
         except Exception as e:
             conn.rollback()

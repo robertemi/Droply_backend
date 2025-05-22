@@ -18,7 +18,7 @@ class Company():
                 )
                 company_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(name, address, company_id)
+                return cls(company_id, name, address)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Company creation failed: {e}")

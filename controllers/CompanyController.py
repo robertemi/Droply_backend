@@ -24,7 +24,7 @@ def register_company():
         )
 
         if not company:
-            return jsonify({"error": "Company registration failed"}), 400
+            return jsonify({"error": "Company registration failed controller"}), 400
 
         return jsonify(company.to_dict()), 201
 
