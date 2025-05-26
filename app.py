@@ -1,6 +1,9 @@
 from flask import Flask, jsonify
 from config import Config
 import logging
+from flask import Flask
+from flask_cors import CORS
+
 from controllers import (
     CompanyController,
     CourierController,
@@ -11,6 +14,7 @@ from controllers import (
 def create_app(config_class=Config):
     """Application factory pattern"""
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(config_class)
 
     # # Setup logging
