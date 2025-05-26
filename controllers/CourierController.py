@@ -19,8 +19,6 @@ def create_courier():
             conn,
             name=data['name'],
             vehicle_type=data['vehicle_type'],
-            rating=0,
-            balance=0,
             password=data['password'],
             email=data['courier_email']
         )

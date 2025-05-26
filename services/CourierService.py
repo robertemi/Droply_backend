@@ -10,7 +10,6 @@ class CourierService:
                 conn=conn,
                 name=name,
                 vehicle_type=vehicle_type,
-
                 password=password,
                 email=email
             )
