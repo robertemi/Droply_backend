@@ -12,18 +12,18 @@ class Courier():
         self.email = email
 
     @classmethod
-    def create(cls, conn, name: str, vehicle_type: str, rating: int, balance: float, password: str, email: str):
+    def create(cls, conn, name: str, vehicle_type: str, password: str, email: str):
         """Create new courier in database"""
         try:
             with conn.cursor() as cur:
                 cur.execute(
                     "INSERT INTO couriers (name, vehicle_type, rating, balance, password, courier_email) "
                     "VALUES (%s, %s, %s, %s, %s, %s) RETURNING courier_id",
-                    (name, vehicle_type, rating, balance, password, email)
+                    (name, vehicle_type, 0, 0, password, email)
                 )
                 courier_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(courier_id, name, vehicle_type, rating, balance, password, email)
+                return cls(courier_id, name, vehicle_type, 0, 0, password, email)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Courier creation failed: {e}")

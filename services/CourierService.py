@@ -3,15 +3,14 @@ from models.Order import Order
 class CourierService:
     @staticmethod
     def create_courier(
-        conn, name, vehicle_type, rating, balance, password, email
+        conn, name, vehicle_type, password, email
     ):
         try:
             courier = Courier.create(
                 conn=conn,
                 name=name,
                 vehicle_type=vehicle_type,
-                rating=rating,
-                balance=balance,
+
                 password=password,
                 email=email
             )

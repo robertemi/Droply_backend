@@ -5,39 +5,27 @@ from models.OrderStatusHistory import OrderStatusHistory
 import psycopg2
 
 class Order():
-    def __init__(self, order_id: int, company_id: int, pickup_address: str, delivery_address: str, status: str, created_at: datetime, courier_id: int):
+    def __init__(self, order_id: int, company_id: int, pickup_address: str, delivery_address: str, status: str, created_at: datetime):
         self.order_id = order_id
         self.company_id = company_id
         self.pickup_address = pickup_address
         self.delivery_address = delivery_address
         self.status = status
         self.created_at = created_at
-        self.courier_id = courier_id
 
     @classmethod
-    def create(cls, conn, company_id, pickup_address, delivery_address, status, created_at, courier_id: Optional[int] = None):
+    def create(cls, conn, company_id, pickup_address, delivery_address, status, created_at):
         try:
             with conn.cursor() as cur:
                 # handle case of no assigned courier
-                if courier_id:
-                    cur.execute(
-                        "INSERT INTO orders (company_id, pickup_address, delivery_address, status, created_at, courier_id) "
-                        "VALUES (%s, %s, %s, %s, %s, %s) RETURNING order_id",
-                        (company_id, pickup_address, delivery_address, status, created_at, courier_id)
-                    )
-                    order_id = cur.fetchone()[0]
-                    conn.commit()
-                    return cls(order_id, company_id, pickup_address, delivery_address, status, created_at, courier_id)
-
-                else:
                     cur.execute(
                         "INSERT INTO orders (company_id, pickup_address, delivery_address, status, created_at) "
                         "VALUES (%s, %s, %s, %s, %s) RETURNING order_id",
                         (company_id, pickup_address, delivery_address, status, created_at)
                     )
-                order_id = cur.fetchone()[0]
-                conn.commit()
-                return cls(order_id, company_id, pickup_address, delivery_address, status, created_at)
+                    order_id = cur.fetchone()[0]
+                    conn.commit()
+                    return cls(order_id, company_id, pickup_address, delivery_address, status, created_at)
 
         except psycopg2.Error as e:
             conn.rollback()
@@ -51,9 +39,11 @@ class Order():
             with conn.cursor() as cur:
                 # Assign order
                 cur.execute(
-                    "UPDATE orders SET courier_id = %s, status = 'assigned' WHERE order_id = %s",
-                    (courier_id, order_id)
+                    "INSERT INTO orders_couriers (order_id, courier_id) VALUES (%s, %s)",
+                    (order_id, courier_id)
                 )
+
+                cur.execute()
 
                 # # Mark courier as busy
                 # cur.execute(
