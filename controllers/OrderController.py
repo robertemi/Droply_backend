@@ -11,12 +11,12 @@ def create_order():
         data = request.get_json()
         print(f"Received Data: {data}")
 
-        if not all([data.get('company_id'), data.get('pickup_address'), data.get('delivery_address')]):
+        if not all([data.get('pickup_address'), data.get('delivery_address')]):
             return jsonify({"error": "Missing fields required"}), 400
 
         courier_id = data.get('courier_id')
 
-        print(f"Attempt to create Order: {data['company_id']}, {data['pickup_address']}, {data['delivery_address']}")
+        print(f"Attempt to create Order: {data['pickup_address']}, {data['delivery_address']}")
         order = OrderService.create_order(
             conn=conn,
             company_id=data['company_id'],
@@ -31,7 +31,9 @@ def create_order():
 
         return jsonify(order.to_dict()), 201
 
+
     except Exception as e:
+        print(f"Order creation failed: {e}")  # <--- Add this line
         return jsonify({"error": str(e)}), 400
     finally:
         conn.close()
@@ -73,5 +75,34 @@ def assign_courier():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    finally:
+        conn.close()
+
+@order_bp.route('/available_orders', methods=['GET'])
+def get_company_orders():
+    conn = get_db_connection()
+    company_id = request.args.get('company_id')
+    if not company_id:
+        return {'error': 'Missing company_id'}, 400
+    try:
+        orders = OrderService.get_company_orders(conn, company_id)
+        return jsonify({'orders': orders}), 200
+    except Exception as e:
+        print(f"Error in get_company_orders: {e}")
+        return {'error': str(e)}, 500
+    finally:
+        conn.close()
+
+@order_bp.route('/delete_order/<int:order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    conn = get_db_connection()
+    try:
+        OrderService.delete_order(conn, order_id)
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        print(f"Error in delete_order: {e}")
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
     finally:
         conn.close()

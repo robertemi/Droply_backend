@@ -49,6 +49,19 @@ class Order():
             return []
 
     @classmethod
+    def get_company_orders(cls, conn, company_id):
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT * FROM orders WHERE company_id = %s",
+                (company_id,)
+            )
+
+            results = cur.fetchall()
+            return [
+                cls(*row) for row in results
+            ]
+
+    @classmethod
     def assign_order(cls, conn, courier_id: int, order_id: int) -> bool:
         """Assign order to courier and mark as unavailable"""
         try:
@@ -98,6 +111,15 @@ class Order():
                     created_at=result[5]
                 )
             return None
+    @classmethod
+    def delete_order(self, conn, order_id):
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM orders WHERE order_id = %s",
+                (order_id,)
+            )
+            return None
+
 
     def to_dict(self) -> dict:
         return {

@@ -34,18 +34,6 @@ class Company():
             print(f"Database error code: {e.pgcode}")  # Show error code
             return None
 
-    @classmethod
-    def get_company_orders(cls, conn, company_id):
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT * FROM orders WHERE company_id = %s",
-                (company_id)
-            )
-
-            results = cur.fetchall()
-            return [
-                cls(*row) for row in results
-            ]
 
     @classmethod
     def get_by_id(cls, conn, id: int):
