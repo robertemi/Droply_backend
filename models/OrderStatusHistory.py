@@ -2,21 +2,29 @@ import datetime
 
 import psycopg2
 
+
+'''
+Serves to model the use case of a courier choosing an order
+
+ONLY TO BE USED FOR INSERTING ASSGINED ORDERS
+
+'''
 class OrderStatusHistory:
-    def __init__(self, order_status_history_id, order_id, status, timestamp):
+    def __init__(self, order_status_history_id, order_id, status, timestamp, courier_id):
         self.order_status_history_id = order_status_history_id
         self.order_id = order_id
         self.status = status
         self.timestamp = timestamp
+        self.courier_id = courier_id
 
     @classmethod
-    def create(cls, conn, order_id, status, timestamp):
+    def create(cls, conn, order_id, status, timestamp, courier_id):
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "INSERT INTO orderstatushistory (order_id, status, timestamp) "
-                    "VALUES (%s, %s, %s) RETURNING orderstatushistory_id",
-                    (order_id, status, timestamp)
+                    "INSERT INTO orderstatushistory (order_id, status, timestamp, courier_id) "
+                    "VALUES (%s, %s, %s, %s) RETURNING orderstatushistory_id",
+                    (order_id, status, timestamp, courier_id)
                 )
                 orderstatushistory_id = cur.fetchone()[0]
                 conn.commit()
