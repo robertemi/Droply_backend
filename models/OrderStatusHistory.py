@@ -59,7 +59,7 @@ class OrderStatusHistory:
             with conn.cursor() as cur:
                 # Add to history
                 cur.execute(
-                    """INSERT INTO order_status_history 
+                    """INSERT INTO orderstatushistory 
                     (order_id, status) 
                     VALUES (%s, %s, %s) 
                     RETURNING history_id, changed_at""",

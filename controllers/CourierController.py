@@ -49,7 +49,7 @@ def validate_log_in():
         if courier:
             return jsonify({
                 "success": True,
-                "company": courier.to_dict()
+                "courier": courier.to_dict()
             }), 200
         else:
             return jsonify({
