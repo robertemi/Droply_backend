@@ -27,7 +27,7 @@ def create_courier():
             print(f"CourierService returned None")
             return jsonify({"error": "Courier creation failed"}), 400
 
-        return jsonify(courier.to_dict()), 201
+        return jsonify({'courier_id': courier}), 201
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400

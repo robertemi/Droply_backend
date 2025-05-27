@@ -13,7 +13,7 @@ class CourierService:
                 password=password,
                 email=email
             )
-            return courier
+            return courier.courier_id
         except Exception as e:
             conn.rollback()
             print(f"Courier creation failed: {str(e)}")
