@@ -37,8 +37,8 @@ class Order():
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT order_id, company_id, pickup_address, delivery_address, status, created_at"
-                    "FROM orders WHERE status = 'Created'"
+                    "SELECT order_id, company_id, pickup_address, delivery_address, status, created_at "
+                    "FROM orders WHERE status = 'Created' "
                 )
                 results = cur.fetchall()
                 return [
