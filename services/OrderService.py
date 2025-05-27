@@ -66,6 +66,21 @@ class OrderService:
         except Exception as e:
             return print(f"Unexpected")
 
+    @staticmethod
+    def get_company_orders(conn, company_id):
+        try:
+            orders = Order.get_company_orders(conn, company_id)
+            return [order.to_dict() for order in orders]
+        except Exception as e:
+            print(f"Unexpected: {e}")
+            return []
+
+    @staticmethod
+    def delete_order(conn, order_id):
+        try:
+            Order.delete_order(conn, order_id)
+        except Exception as e:
+            print(f"Unexpected: {e}")
 
     @staticmethod
     def assign_courier(
