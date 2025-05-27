@@ -33,6 +33,22 @@ class Order():
             return None
 
     @classmethod
+    def get_unassigned_orders(cls, conn):
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT order_id, company_id, pickup_address, delivery_address, status, created_at"
+                    "FROM orders WHERE status = 'Created'"
+                )
+                results = cur.fetchall()
+                return [
+                    cls(*row) for row in results
+                ]
+        except psycopg2.Error as e:
+            print(f"Fetch unassigned orders failed: {e}")
+            return []
+
+    @classmethod
     def assign_order(cls, conn, courier_id: int, order_id: int) -> bool:
         """Assign order to courier and mark as unavailable"""
         try:
