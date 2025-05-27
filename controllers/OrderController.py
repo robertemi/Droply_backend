@@ -37,6 +37,22 @@ def create_order():
         conn.close()
 
 
+@order_bp.route('/unassigned', methods=['GET'])
+def get_unassigned_orders():
+    conn = get_db_connection()
+    try:
+        orders = OrderService.get_unassigned_order(conn)
+        if not orders:
+            return jsonify([]), 200
+
+        return jsonify([order.to_dict() for order in orders]), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        conn.close()
+
+
 @order_bp.route('/assign_courier', methods=['POST'])
 def assign_courier():
     conn = get_db_connection()

@@ -59,6 +59,15 @@ class OrderService:
             conn.close()
 
     @staticmethod
+    def get_unassigned_order(conn):
+        try:
+            orders = Order.get_unassigned_orders(conn)
+            return orders
+        except Exception as e:
+            return print(f"Unexpected")
+
+
+    @staticmethod
     def assign_courier(
             conn,
             order_id: int,
