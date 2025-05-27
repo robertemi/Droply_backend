@@ -73,3 +73,15 @@ def validate_log_in():
     finally:
         if conn:
             conn.close()
+
+@company_bp.route('/available_orders', methods=['GET'])
+def get_company_orders():
+    conn = get_db_connection()
+    company_id = request.args.get('company_id')
+    if not company_id:
+        return {'error': 'Missing company_id'}, 400
+    try:
+        orders = CompanyService.get_company_orders(conn, company_id)
+        return jsonify({'orders': orders}), 200
+    except Exception as e:
+        return {'error': str(e)}, 500

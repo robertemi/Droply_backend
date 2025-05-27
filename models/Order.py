@@ -55,7 +55,7 @@ class Order():
             with conn.cursor() as cur:
                 # Assign order
                 cur.execute(
-                    "INSERT INTO orders_couriers (order_id, courier_id) VALUES (%s, %s)",
+                    "INSERT INTO orderstatushistory (order_id, courier_id) VALUES (%s, %s)",
                     (order_id, courier_id)
                 )
 
@@ -95,18 +95,15 @@ class Order():
                     pickup_address=result[2],
                     delivery_address=result[3],
                     status=result[4],
-                    created_at=result[5],
-                    courier_id=result[6]
+                    created_at=result[5]
                 )
             return None
 
     def to_dict(self) -> dict:
         return {
             'order_id': self.order_id,
-            'company_id': self.company_id,
+            "company_id": self.company_id,
             'pickup_address': self.pickup_address,
             'delivery_address': self.delivery_address,
-            'status': self.status,
-            'created_at': self.created_at,
-            'courier_id': self.courier_id if self.courier_id else None
+            'created_at': self.created_at
         }

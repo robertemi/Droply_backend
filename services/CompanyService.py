@@ -37,6 +37,15 @@ class CompanyService:
             print(f"Validation error: {e}")
             return None
 
+    @staticmethod
+    def get_company_orders(conn, company_id):
+        try:
+            orders = Company.get_company_orders(conn, company_id)
+            return orders
+        except Exception as e:
+            return print(f"Unexpected")
+
+
     # to be used for log in functionality
     @staticmethod
     def get_company_from_email_and_password(
