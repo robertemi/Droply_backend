@@ -47,6 +47,7 @@ class OrderService:
             OrderStatusHistory.add_status_entry(
                 conn=conn,
                 order_id=order_id,
+                courier_id=courier_id,
                 new_status='Assigned'
             )
 
