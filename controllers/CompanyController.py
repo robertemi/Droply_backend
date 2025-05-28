@@ -53,14 +53,14 @@ def validate_log_in():
             return jsonify({"error": "No data provided"})
 
         conn = get_db_connection()
-        company = CompanyService.get_company_from_email_and_password(
+        company_id = CompanyService.get_company_from_email_and_password(
             conn, data['company_email'], data['password']
         )
 
-        if company:
+        if company_id:
             return jsonify({
                 "success": True,
-                "company": company.to_dict()
+                "company_id": company_id
             }), 200
         else:
             return jsonify({

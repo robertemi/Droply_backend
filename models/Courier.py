@@ -58,17 +58,18 @@ class Courier():
                     "SELECT * FROM couriers WHERE courier_email = %s AND password = %s",
                     (email, password)
                 )
-                result = cur.fetchone()
+                result = cur.fetchone()[0]
                 if result:
-                    return cls(
-                        courier_id=result[0],
-                        name=result[1],
-                        vehicle_type=result[2],
-                        rating=result[3],
-                        balance=result[4],
-                        password=result[5],
-                        email=result[6]
-                    )
+                    return result
+                    # return cls(
+                    #     courier_id=result[0],
+                    #     name=result[1],
+                    #     vehicle_type=result[2],
+                    #     rating=result[3],
+                    #     balance=result[4],
+                    #     password=result[5],
+                    #     email=result[6]
+                    # )
         except Exception as e:
             print(f"Encountered error: {e}")
 

@@ -62,15 +62,16 @@ class Company():
                     "SELECT * FROM companies WHERE company_email = %s AND password = %s",
                     (email, password)
                 )
-                result = cur.fetchone()
+                result = cur.fetchone()[0]
                 if result:
-                    return cls(
-                        company_id=result[0],
-                        name=result[1],
-                        address=result[2],
-                        password=result[3],
-                        email=result[4]
-                    )
+                    return result
+                    # return cls(
+                    #     company_id=result[0],
+                    #     name=result[1],
+                    #     address=result[2],
+                    #     password=result[3],
+                    #     email=result[4]
+                    # )
         except Exception as e:
             print(f"Encountered error: {e}")
 
