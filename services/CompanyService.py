@@ -43,8 +43,10 @@ class CompanyService:
             conn, email, password
     ):
         try:
-            company = Company.get_by_email_and_password(conn, email, password)
-            return company
+            company_id = Company.get_by_email_and_password(conn, email, password)
+            return company_id
+            # company = Company.get_by_email_and_password(conn, email, password)
+            # return company
 
         except Exception as e:
             print(f"Encountered: {e}")

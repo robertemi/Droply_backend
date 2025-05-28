@@ -24,8 +24,8 @@ class CourierService:
             conn, email, password
     ):
         try:
-            courier = Courier.get_by_email_and_password(conn, email, password)
-            return courier
+            courier_id = Courier.get_by_email_and_password(conn, email, password)
+            return courier_id
 
         except Exception as e:
             print(f"Encountered: {e}")

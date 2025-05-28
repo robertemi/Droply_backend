@@ -42,14 +42,14 @@ def validate_log_in():
             return jsonify({"error": "No data provided"})
 
         conn = get_db_connection()
-        courier = CourierService.get_courier_from_email_and_password(
+        courier_id = CourierService.get_courier_from_email_and_password(
             conn, data['courier_email'], data['password']
         )
 
-        if courier:
+        if courier_id:
             return jsonify({
                 "success": True,
-                "courier": courier.to_dict()
+                "courier": courier_id
             }), 200
         else:
             return jsonify({
