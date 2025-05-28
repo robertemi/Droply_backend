@@ -72,6 +72,8 @@ def assign_courier():
         if not success:
             return jsonify({"error": "Courier assignment failed"}), 400
 
+        return jsonify({"success": True}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     finally:

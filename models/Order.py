@@ -97,7 +97,7 @@ class Order():
         """Retrieve order by id"""
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT * FROM orders WHERE id = %s",
+                "SELECT * FROM orders WHERE order_id = %s",
                 (id,)
             )
             result = cur.fetchone()

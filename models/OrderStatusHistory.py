@@ -6,7 +6,7 @@ import psycopg2
 '''
 Serves to model the use case of a courier choosing an order
 
-ONLY TO BE USED FOR INSERTING ASSGINED ORDERS
+ONLY TO BE USED FOR INSERTING ASSIGNED ORDERS
 
 '''
 class OrderStatusHistory:
@@ -26,9 +26,8 @@ class OrderStatusHistory:
                     "VALUES (%s, %s, %s, %s) RETURNING orderstatushistory_id",
                     (order_id, status, timestamp, courier_id)
                 )
-                orderstatushistory_id = cur.fetchone()[0]
                 conn.commit()
-                return cls(orderstatushistory_id, order_id, status, timestamp)
+                return cls(order_id, status, timestamp, courier_id)
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Order Status History creation failed: {e}")
@@ -52,26 +51,17 @@ class OrderStatusHistory:
                 )
             return None
 
+    # used to update order to status "Assigned"
     @classmethod
-    def add_status_entry(cls, conn: object, order_id: int, new_status: str) -> object:
+    def add_status_entry(cls, conn: object, order_id: int, courier_id: int, new_status: str) -> object:
         """Add new status entry and update order's current status"""
         try:
             with conn.cursor() as cur:
                 # Add to history
                 cur.execute(
-                    """INSERT INTO orderstatushistory 
-                    (order_id, status) 
-                    VALUES (%s, %s, %s) 
-                    RETURNING history_id, changed_at""",
-                    (order_id, new_status, datetime.datetime.now())
+                    "INSERT INTO orderstatushistory (order_id, status, timestamp, courier_id) VALUES (%s, %s, %s, %s) ",
+                    (order_id, new_status, datetime.datetime.now(), courier_id)
                 )
-
-                # Update order's current status
-                cur.execute(
-                    "UPDATE orders SET status = %s WHERE order_id = %s",
-                    (new_status, order_id)
-                )
-
                 conn.commit()
                 return True
         except psycopg2.Error as e:
@@ -85,5 +75,6 @@ class OrderStatusHistory:
             'order_status_history_id': self.order_status_history_id,
             'order_id': self.order_id,
             'status': self.status,
-            'timestamp': self.timestamp
+            'timestamp': self.timestamp,
+            'courier_id': self.courier_id
         }
