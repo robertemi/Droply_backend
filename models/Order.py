@@ -18,7 +18,7 @@ class Order():
     def generate_awb(self):
         # DRP-12345678-RO
         random_8_digit = random.randint(10_000_000, 99_999_999)
-        return 'DRP-' + str(random_8_digit) + '-RO'
+        return str('DRP-' + str(random_8_digit) + '-RO')
 
     @classmethod
     def create(cls, conn, company_id, pickup_address, delivery_address, status, created_at):
@@ -82,15 +82,9 @@ class Order():
 
                 cur.execute()
 
-                # # Mark courier as busy
-                # cur.execute(
-                #     "UPDATE couriers SET is_available = FALSE WHERE courier_id = %s",
-                #     (courier_id,)
-                # )
-
                 # Record status change
                 OrderStatusHistory.add_status_entry(
-                    conn, order_id, 'assigned', changed_by=courier_id
+                    conn, order_id, courier_id=courier_id, new_status='Assigned'
                 )
 
                 conn.commit()
@@ -116,7 +110,8 @@ class Order():
                     pickup_address=result[2],
                     delivery_address=result[3],
                     status=result[4],
-                    created_at=result[5]
+                    created_at=result[5],
+                    awb=result[6]
                 )
             return None
     @classmethod
