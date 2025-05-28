@@ -22,8 +22,7 @@ class OrderService:
                 pickup_address=pickup_address,
                 delivery_address=delivery_address,
                 status='Created',
-                created_at=datetime.datetime.now(),
-                courier_id=courier_id,
+                created_at=datetime.datetime.now()
             )
             return order
 

@@ -21,8 +21,7 @@ def create_order():
             conn=conn,
             company_id=data['company_id'],
             pickup_address=data['pickup_address'],
-            delivery_address=data['delivery_address'],
-            courier_id=courier_id
+            delivery_address=data['delivery_address']
         )
 
         if not order:
