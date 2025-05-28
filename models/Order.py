@@ -1,31 +1,39 @@
 from datetime import datetime
 from typing import Optional
-
+import random
 from models.OrderStatusHistory import OrderStatusHistory
 import psycopg2
 
 class Order():
-    def __init__(self, order_id: int, company_id: int, pickup_address: str, delivery_address: str, status: str, created_at: datetime):
+    def __init__(self, order_id: int, company_id: int, pickup_address: str, delivery_address: str, status: str, created_at: datetime, awb: str):
         self.order_id = order_id
         self.company_id = company_id
         self.pickup_address = pickup_address
         self.delivery_address = delivery_address
         self.status = status
         self.created_at = created_at
+        self.awb = awb
+
+    @classmethod
+    def generate_awb(self):
+        # DRP-12345678-RO
+        random_8_digit = random.randint(10_000_000, 99_999_999)
+        return 'DRP-' + str(random_8_digit) + '-RO'
 
     @classmethod
     def create(cls, conn, company_id, pickup_address, delivery_address, status, created_at):
+        awb = cls.generate_awb()
         try:
             with conn.cursor() as cur:
                 # handle case of no assigned courier
                     cur.execute(
-                        "INSERT INTO orders (company_id, pickup_address, delivery_address, status, created_at) "
-                        "VALUES (%s, %s, %s, %s, %s) RETURNING order_id",
-                        (company_id, pickup_address, delivery_address, status, created_at)
+                        "INSERT INTO orders (company_id, pickup_address, delivery_address, status, created_at, awb) "
+                        "VALUES (%s, %s, %s, %s, %s, %s) RETURNING order_id",
+                        (company_id, pickup_address, delivery_address, status, created_at, awb)
                     )
                     order_id = cur.fetchone()[0]
                     conn.commit()
-                    return cls(order_id, company_id, pickup_address, delivery_address, status, created_at)
+                    return cls(order_id, company_id, pickup_address, delivery_address, status, created_at, awb)
 
         except psycopg2.Error as e:
             conn.rollback()
@@ -37,7 +45,7 @@ class Order():
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT order_id, company_id, pickup_address, delivery_address, status, created_at "
+                    "SELECT order_id, company_id, pickup_address, delivery_address, status, created_at, awb "
                     "FROM orders WHERE status = 'Created' "
                 )
                 results = cur.fetchall()
