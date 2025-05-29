@@ -123,17 +123,36 @@ def delete_order(order_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@order_bp.route('/unassign_courier', methods=['POST'])
+def unassign_order():
+    conn = get_db_connection()
+    try:
+        data = request.get_json()
+        order_id = data.get('order_id')
+        if not order_id:
+            return jsonify({'error': 'Missing order_id'}), 400
+        OrderService.unassign_order(conn, order_id)
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        print(f"Error in unassign_courier: {e}")
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
         
 @order_bp.route('/track/<string:awb>', methods=['GET', 'OPTIONS'])
 def track_package(awb):
     """Track package by AWB number"""
     # Handle preflight OPTIONS request
-    if request.method == 'OPTIONS':
-        response = jsonify({'status': 'OK'})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept,Origin,X-Requested-With")
-        response.headers.add('Access-Control-Allow-Methods', "GET,OPTIONS")
-        return response
+    # if request.method == 'OPTIONS':
+    #     response = jsonify({'status': 'OK'})
+    #     response.headers.add("Access-Control-Allow-Origin", "*")
+    #     response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept,Origin,X-Requested-With")
+    #     response.headers.add('Access-Control-Allow-Methods', "GET,OPTIONS")
+    #     return response
     
     print(f"Tracking request for AWB: '{awb}'")
     conn = get_db_connection()

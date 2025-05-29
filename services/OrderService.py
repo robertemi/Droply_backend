@@ -131,7 +131,15 @@ class OrderService:
         except Exception as e:
             print(f"Error getting tracking info: {e}")
             return None
-    
+
+    @staticmethod
+    def unassign_order(conn, order_id):
+        try:
+            Order.unassign_order(conn, order_id)
+        except Exception as e:
+            print(f"Unexpected: {e}")
+
+
     @staticmethod
     def get_order_status_history(conn, order_id):
         """Get status history for an order"""
