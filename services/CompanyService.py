@@ -1,7 +1,7 @@
 from models.Company import Company
 from typing import Optional, List, Dict
 import psycopg2
-
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class CompanyService:
     @staticmethod
@@ -18,12 +18,14 @@ class CompanyService:
             if not all([name, address]):
                 raise ValueError("Name and address are required")
 
+            hashed_password = generate_password_hash(password)
+
             # Create using model's create method
             company = Company.create(
                 conn=conn,
                 name=name,
                 address=address,
-                password=password,
+                password=hashed_password,
                 email=email
             )
             return company

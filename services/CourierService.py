@@ -1,16 +1,19 @@
 from models.Courier import Courier
 from models.Order import Order
+from werkzeug.security import generate_password_hash
 class CourierService:
     @staticmethod
     def create_courier(
         conn, name, vehicle_type, password, email
     ):
         try:
+            hashed_password = generate_password_hash(password)
+
             courier = Courier.create(
                 conn=conn,
                 name=name,
                 vehicle_type=vehicle_type,
-                password=password,
+                password=hashed_password,
                 email=email
             )
             return courier.courier_id
