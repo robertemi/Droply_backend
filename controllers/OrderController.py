@@ -107,3 +107,62 @@ def delete_order(order_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+        
+@order_bp.route('/track/<string:awb>', methods=['GET', 'OPTIONS'])
+def track_package(awb):
+    """Track package by AWB number"""
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'OK'})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept,Origin,X-Requested-With")
+        response.headers.add('Access-Control-Allow-Methods', "GET,OPTIONS")
+        return response
+    
+    print(f"Tracking request for AWB: '{awb}'")
+    conn = get_db_connection()
+    try:
+        # Add debugging to see what's in the database
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM orders")
+            total_orders = cur.fetchone()[0]
+            print(f"Total orders in database: {total_orders}")
+            
+            cur.execute("SELECT COUNT(*) FROM orders WHERE awb IS NOT NULL")
+            orders_with_awb = cur.fetchone()[0]
+            print(f"Orders with AWB: {orders_with_awb}")
+            
+            cur.execute("SELECT awb FROM orders WHERE awb IS NOT NULL LIMIT 5")
+            sample_awbs = cur.fetchall()
+            print(f"Sample AWBs in database: {[row[0] for row in sample_awbs]}")
+            
+            # Check for exact match
+            cur.execute("SELECT COUNT(*) FROM orders WHERE awb = %s", (awb,))
+            exact_match = cur.fetchone()[0]
+            print(f"Exact match for '{awb}': {exact_match}")
+            
+            # Check for case-insensitive match
+            cur.execute("SELECT COUNT(*) FROM orders WHERE LOWER(awb) = LOWER(%s)", (awb,))
+            case_insensitive_match = cur.fetchone()[0]
+            print(f"Case-insensitive match for '{awb}': {case_insensitive_match}")
+        
+        tracking_info = OrderService.get_tracking_info(conn, awb)
+        
+        if not tracking_info:
+            print(f"No tracking info found for AWB: '{awb}'")
+            response = jsonify({"error": "Tracking number not found"})
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response, 404
+        
+        print(f"Successfully found tracking info for AWB: '{awb}'")
+        response = jsonify(tracking_info)
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 200
+        
+    except Exception as e:
+        print(f"Error tracking package: {e}")
+        response = jsonify({"error": "Internal server error"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
+    finally:
+        conn.close()
