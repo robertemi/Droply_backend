@@ -1,5 +1,5 @@
 import psycopg2
-
+from werkzeug.security import check_password_hash
 
 class Courier():
     def __init__(self, courier_id: int, name: str, vehicle_type: str, rating: int, balance: float, password: str, email: str):
@@ -55,21 +55,14 @@ class Courier():
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT * FROM couriers WHERE courier_email = %s AND password = %s",
-                    (email, password)
+                    "SELECT * FROM couriers WHERE courier_email = %s",
+                    (email,)
                 )
-                result = cur.fetchone()[0]
+                result = cur.fetchone()
                 if result:
-                    return result
-                    # return cls(
-                    #     courier_id=result[0],
-                    #     name=result[1],
-                    #     vehicle_type=result[2],
-                    #     rating=result[3],
-                    #     balance=result[4],
-                    #     password=result[5],
-                    #     email=result[6]
-                    # )
+                    if check_password_hash(result[5], password):
+                        return result[0]
+
         except Exception as e:
             print(f"Encountered error: {e}")
 
