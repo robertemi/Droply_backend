@@ -16,11 +16,17 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     
     # Configure CORS properly for production
-    CORS(app, 
-         origins=['*'],  # Allow all origins - can be restricted later
+    # CORS(app,
+    #      origins=['*'],  # Allow all origins - can be restricted later
+    #      methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    #      allow_headers=['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    #      supports_credentials=False)  # Set to False for wildcard origins
+
+    CORS(app,
+         resources={r"/*": {"origins": "*"}},
          methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
          allow_headers=['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-         supports_credentials=False)  # Set to False for wildcard origins
+         supports_credentials=False)
     
     app.config.from_object(config_class)
 
@@ -36,12 +42,12 @@ def create_app(config_class=Config):
     app.register_blueprint(OrderStatusHistoryController.order_status_history_bp)
 
     # Add CORS headers to all responses
-    @app.after_request
-    def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin,X-Requested-With')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
+    # @app.after_request
+    # def after_request(response):
+    #     response.headers.add('Access-Control-Allow-Origin', '*')
+    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin,X-Requested-With')
+    #     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    #     return response
 
     # Health check endpoint
     @app.route('/')

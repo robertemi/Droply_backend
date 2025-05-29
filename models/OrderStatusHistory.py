@@ -64,10 +64,20 @@ class OrderStatusHistory:
                 )
                 conn.commit()
                 return True
+
         except psycopg2.Error as e:
             conn.rollback()
             print(f"Status update failed: {e}")
             return False
+
+    @classmethod
+    def unassign_order(cls, conn, order_id):
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM orderstatushistory WHERE order_id = %s",
+                (order_id,)
+            )
+            conn.commit()
 
     def to_dict(self) -> dict:
         """Convert to API-friendly format"""

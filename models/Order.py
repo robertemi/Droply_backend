@@ -177,15 +177,16 @@ class Order():
                     awb=result[6]
                 )
             return None
+
+    @classmethod
+    def unassign_order(cls, conn, order_id):
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE orders SET status = 'Created' WHERE order_id = %s",
+                (order_id,)
+            )
+            OrderStatusHistory.unassign_order(conn, order_id)
+            conn.commit()
     
-    # def to_dict(self) -> dict:
-    #     return {
-    #         'order_id': self.order_id,
-    #         "company_id": self.company_id,
-    #         'pickup_address': self.pickup_address,
-    #         'delivery_address': self.delivery_address,
-    #         'status': self.status,
-    #         'awb': self.awb,
-    #         'created_at': self.created_at.isoformat() if self.created_at else None
-    #     }
+
 
