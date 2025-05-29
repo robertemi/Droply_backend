@@ -40,6 +40,27 @@ class Order():
             print(f"Order creation failed: {e}")
             return None
 
+    # returns orders that a courier has accepted
+    @classmethod
+    def get_assigned_orders(cls, conn, courier_id):
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT orders.order_id, orders.company_id, orders.pickup_address, orders.delivery_address, "
+                    "orders.status, orders.created_at, orders.awb "
+                    "FROM orders "
+                    "INNER JOIN orderstatushistory ON orders.order_id = orderstatushistory.order_id "
+                    "WHERE orderstatushistory.courier_id = %s",
+                    (courier_id,)
+                )
+                results = cur.fetchall()
+                return [
+                    cls(*row) for row in results
+                ]
+        except psycopg2.Error as e:
+            print(f"Fetch assigned orders failed: {e}")
+            return []
+
     @classmethod
     def get_unassigned_orders(cls, conn):
         try:
@@ -121,7 +142,7 @@ class Order():
                 "DELETE FROM orders WHERE order_id = %s",
                 (order_id,)
             )
-            return None
+            conn.commit()
 
 
     def to_dict(self) -> dict:
@@ -130,8 +151,11 @@ class Order():
             "company_id": self.company_id,
             'pickup_address': self.pickup_address,
             'delivery_address': self.delivery_address,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'status': self.status,
+            'awb': self.awb
         }
+         
     
     @classmethod
     def get_by_awb(cls, conn, awb: str):
@@ -164,3 +188,4 @@ class Order():
     #         'awb': self.awb,
     #         'created_at': self.created_at.isoformat() if self.created_at else None
     #     }
+

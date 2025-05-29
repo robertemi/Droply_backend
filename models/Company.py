@@ -1,5 +1,5 @@
 import psycopg2
-
+from werkzeug.security import check_password_hash
 
 class Company():
     def __init__(self, company_id, name, address, password, email):
@@ -59,19 +59,13 @@ class Company():
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT * FROM companies WHERE company_email = %s AND password = %s",
-                    (email, password)
+                    "SELECT * FROM companies WHERE company_email = %s",
+                    (email,)
                 )
-                result = cur.fetchone()[0]
+                result = cur.fetchone()
                 if result:
-                    return result
-                    # return cls(
-                    #     company_id=result[0],
-                    #     name=result[1],
-                    #     address=result[2],
-                    #     password=result[3],
-                    #     email=result[4]
-                    # )
+                    if check_password_hash(result[3], password):
+                        return result[0]
         except Exception as e:
             print(f"Encountered error: {e}")
 

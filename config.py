@@ -31,7 +31,7 @@ else:
 # Connection pool (optional but recommended)
 connection_pool = psycopg2.pool.SimpleConnectionPool(
     minconn=1,
-    maxconn=10,
+    maxconn=20,
     **DB_CONFIG,
     options="-c statement_timeout=5s"  # Add timeout
 )

@@ -79,6 +79,21 @@ def assign_courier():
     finally:
         conn.close()
 
+@order_bp.route('/assigned_orders', methods=['GET'])
+def get_assigned_orders():
+    conn = get_db_connection()
+    courier_id = request.args.get('courier_id')
+    if not courier_id:
+        return {'error': 'Missing company_id'}, 400
+    try:
+        orders = OrderService.get_assigned_order(conn, courier_id)
+        return jsonify({'orders': [order.to_dict() for order in orders]}), 200
+    except Exception as e:
+        print(f"Error in get_assigned_orders: {e}")
+        return {'error': str(e)}, 500
+    finally:
+        conn.close()
+
 @order_bp.route('/available_orders', methods=['GET'])
 def get_company_orders():
     conn = get_db_connection()
@@ -93,6 +108,7 @@ def get_company_orders():
         return {'error': str(e)}, 500
     finally:
         conn.close()
+
 
 @order_bp.route('/delete_order/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
