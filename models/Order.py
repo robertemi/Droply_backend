@@ -155,3 +155,37 @@ class Order():
             'status': self.status,
             'awb': self.awb
         }
+         
+    
+    @classmethod
+    def get_by_awb(cls, conn, awb: str):
+        """Retrieve order by AWB number"""
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT order_id, company_id, pickup_address, delivery_address, status, created_at, awb FROM orders WHERE awb = %s",
+                (awb,)
+            )
+            result = cur.fetchone()
+            if result:
+                return cls(
+                    order_id=result[0],
+                    company_id=result[1],
+                    pickup_address=result[2],
+                    delivery_address=result[3],
+                    status=result[4],
+                    created_at=result[5],
+                    awb=result[6]
+                )
+            return None
+    
+    # def to_dict(self) -> dict:
+    #     return {
+    #         'order_id': self.order_id,
+    #         "company_id": self.company_id,
+    #         'pickup_address': self.pickup_address,
+    #         'delivery_address': self.delivery_address,
+    #         'status': self.status,
+    #         'awb': self.awb,
+    #         'created_at': self.created_at.isoformat() if self.created_at else None
+    #     }
+

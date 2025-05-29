@@ -103,3 +103,57 @@ class OrderService:
 
         return OrderService._update_to_assigned(conn, order_id, courier_id)
 
+    @staticmethod
+    def get_tracking_info(conn, awb):
+        """Get tracking information for a package by AWB number"""
+        try:
+            # Get order information
+            order = Order.get_by_awb(conn, awb)
+            if not order:
+                return None
+            
+            # Get status history
+            status_history = OrderService.get_order_status_history(conn, order.order_id)
+            
+            # Build tracking response
+            tracking_info = {
+                'tracking_number': order.awb,
+                'order_id': order.order_id,
+                'pickup_address': order.pickup_address,
+                'delivery_address': order.delivery_address,
+                'current_status': order.status,
+                'created_at': order.created_at.isoformat() if order.created_at else None,
+                'status_history': status_history
+            }
+            
+            return tracking_info
+            
+        except Exception as e:
+            print(f"Error getting tracking info: {e}")
+            return None
+    
+    @staticmethod
+    def get_order_status_history(conn, order_id):
+        """Get status history for an order"""
+        try:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT status, timestamp, courier_id 
+                    FROM orderstatushistory 
+                    WHERE order_id = %s 
+                    ORDER BY timestamp ASC
+                """, (order_id,))
+                
+                history = []
+                for row in cur.fetchall():
+                    history.append({
+                        'status': row[0],
+                        'timestamp': row[1].isoformat() if row[1] else None,
+                        'courier_id': row[2]
+                    })
+                
+                return history
+        except Exception as e:
+            print(f"Error getting status history: {e}")
+            return []
+
