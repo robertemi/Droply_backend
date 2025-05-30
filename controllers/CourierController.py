@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.CourierService import CourierService
-from config import get_db_connection
+from config import get_db_connection, return_db_connection
 
 courier_bp = Blueprint('courier', __name__, url_prefix='/api/couriers')
 
@@ -32,7 +32,7 @@ def create_courier():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 @courier_bp.route('/log_in', methods=['POST'])
 def validate_log_in():
@@ -61,4 +61,4 @@ def validate_log_in():
         print(f"Encountered: {e}")
     finally:
         if conn:
-            conn.close()
+            return_db_connection(conn)
