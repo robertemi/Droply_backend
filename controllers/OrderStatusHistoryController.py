@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.OrderStatusHistoryService import OrderStatusHistoryService
-from config import get_db_connection
+from config import get_db_connection, return_db_connection
 
 order_status_history_bp = Blueprint('order_status_history', __name__, url_prefix='/api/order_status_history')
 
@@ -28,7 +28,7 @@ def create_order_status_history():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 @order_status_history_bp.route('/status_change', methods=['POST'])
 def record_status_change():
@@ -54,4 +54,4 @@ def record_status_change():
         conn.rolback()
         return jsonify({"error": str(e)}), 400
     finally:
-        conn.close()
+        return_db_connection(conn)

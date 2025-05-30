@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.CompanyService import CompanyService
-from config import get_db_connection
+from config import get_db_connection, return_db_connection
 
 company_bp = Blueprint('company', __name__, url_prefix='/api/companies')
 
@@ -39,7 +39,7 @@ def register_company():
         print(f"Unexpected error: {e}")
         return jsonify({"error": str(e)}), 400
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 '''
 If the company, given email and password is found, the user can proceed as company, else try again
@@ -72,5 +72,4 @@ def validate_log_in():
         print(f"Encountered: {e}")
     finally:
         if conn:
-            conn.close()
-
+            return_db_connection(conn)

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.OrderService import OrderService
-from config import get_db_connection
+from config import get_db_connection, return_db_connection
 
 order_bp = Blueprint('order', __name__, url_prefix='/api/orders')
 
@@ -35,7 +35,7 @@ def create_order():
         print(f"Order creation failed: {e}")  # <--- Add this line
         return jsonify({"error": str(e)}), 400
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 
 @order_bp.route('/unassigned', methods=['GET'])
@@ -51,7 +51,7 @@ def get_unassigned_orders():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 
 @order_bp.route('/assign_courier', methods=['POST'])
@@ -77,7 +77,7 @@ def assign_courier():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 @order_bp.route('/assigned_orders', methods=['GET'])
 def get_assigned_orders():
@@ -92,7 +92,7 @@ def get_assigned_orders():
         print(f"Error in get_assigned_orders: {e}")
         return {'error': str(e)}, 500
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 @order_bp.route('/available_orders', methods=['GET'])
 def get_company_orders():
@@ -107,7 +107,7 @@ def get_company_orders():
         print(f"Error in get_company_orders: {e}")
         return {'error': str(e)}, 500
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 
 @order_bp.route('/delete_order/<int:order_id>', methods=['DELETE'])
@@ -122,7 +122,7 @@ def delete_order(order_id):
         conn.rollback()
         return jsonify({'error': str(e)}), 500
     finally:
-        conn.close()
+        return_db_connection(conn)
 
 @order_bp.route('/unassign_courier', methods=['POST'])
 def unassign_order():
@@ -140,20 +140,12 @@ def unassign_order():
         conn.rollback()
         return jsonify({'error': str(e)}), 500
     finally:
-        conn.close()
+        return_db_connection(conn)
 
         
 @order_bp.route('/track/<string:awb>', methods=['GET', 'OPTIONS'])
 def track_package(awb):
     """Track package by AWB number"""
-    # Handle preflight OPTIONS request
-    # if request.method == 'OPTIONS':
-    #     response = jsonify({'status': 'OK'})
-    #     response.headers.add("Access-Control-Allow-Origin", "*")
-    #     response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept,Origin,X-Requested-With")
-    #     response.headers.add('Access-Control-Allow-Methods', "GET,OPTIONS")
-    #     return response
-    
     print(f"Tracking request for AWB: '{awb}'")
     conn = get_db_connection()
     try:
@@ -200,4 +192,4 @@ def track_package(awb):
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 500
     finally:
-        conn.close()
+        return_db_connection(conn)
